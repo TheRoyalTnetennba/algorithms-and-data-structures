@@ -68,15 +68,24 @@ class ResizingIntSet
     @num_buckets = num_buckets
     @store = Array.new(@num_buckets) { Array.new }
     @count = 0
+    @max = -1.0/0
+    @min = 1.0/0
   end
 
   def insert(num)
+    @count += 1
+    @max = num if num > @max
+    @min  = num if num < @min
+    self[num] = true
   end
 
   def remove(num)
+    @count -= 1
+    self[num] = false
   end
 
   def include?(num)
+    self[num]
   end
 
   private
@@ -86,9 +95,16 @@ class ResizingIntSet
   end
 
   def []=(num, val)
+    resize! unless @count < num_buckets
     @store[num % @num_buckets][num] = val
   end
 
   def resize!
+    arr = []
+    (@min..@max).each { |i| arr.push(i) if self.include?(i) }
+    @num_buckets *= 2
+    @count = 1
+    @store = Array.new(@num_buckets) { Array.new }
+    arr.each { |i| self.insert(i) }
   end
 end
