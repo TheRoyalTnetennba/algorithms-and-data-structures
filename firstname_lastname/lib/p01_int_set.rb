@@ -101,7 +101,7 @@ class ResizingIntSet
 
   def resize!
     arr = []
-    (@min..@max).each { |i| arr.push(i) if self.include?(i) }
+    ((@min.to_i)..(@max.to_i)).each { |i| arr.push(i) if self.include?(i) }
     @num_buckets *= 2
     @count = 1
     @store = Array.new(@num_buckets) { Array.new }
